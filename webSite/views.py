@@ -36,8 +36,11 @@ def register(request):
             # Create a token for the new user
             token_code = get_random_string(length=32)
             token = Token.objects.create(user=new_user, token=token_code)
-            
-            return render(request, 'registration_success.html')  # Redirect to success page
+            context = {
+                'message': 'اکانت شما ساخته شد. توکن شما {} است. آن را ذخیره کنید چون دیگر نمایش داده نخواهد شد! جدی!'.format(
+                    token_code)}
+            return render(request, 'index.html', context)
+            #return render(request, 'registration_success.html')  # Redirect to success page
     else:
         form = RegistrationForm()
 
