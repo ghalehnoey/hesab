@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from .forms import RegistrationForm
 from .models import Token
-
+from django.db.models import Sum,Count
 
 # create random string for Toekn
 random_str = lambda N: ''.join(
@@ -90,3 +90,14 @@ def submit_income(request):
     return JsonResponse({
         'status':'ok',
     },encoder=JSONEncoder)
+####################
+@csrf_exempt 
+def generalstat(request):
+    this_token = request.POST.get('token')
+    this_user=      User.objects.filter(token__token=this_token).get()
+    income=     Income.objects.filter(user=this_user).aggregate(Count('amount'), Sum('amount'))
+    expense=    Expense.objects.filter(user=this_user).aggregate(Count('amount'), Sum('amount'))
+    context={}
+    context['expense']=expense
+    context['income']=income
+    return JsonResponse(context,encoder=JSONEncoder)
